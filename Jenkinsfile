@@ -49,20 +49,9 @@ node {
         
         stage('Build and Push Docker Image') {
             def container = BuildDockerImage(dockerImageName)
-            PushDockerImage(container, AzClientId, AzClientSecret, dockerRepoServerName)
-            //container = docker.build("${arcSettings.loginServer}/my-app:${env.BUILD_ID}")
+            PushDockerImage(container, dockerRepoServerName)
         }
     }
-    
-    
-
-    /*
-    stage('Publish Docker Image') {
-        ExecuteShellCommand("docker login -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} ${acrSettings.loginServer}", true)
-        container.push()
-        ExecuteShellCommand("docker image prune -f", true)
-    }
-     
     
     stage('Post-build Cleanup') {
         
@@ -70,7 +59,7 @@ node {
         CleanWorkspace()
     }
     
-    */
+
 }
 
 def BuildDockerImage(imageName)
@@ -78,15 +67,13 @@ def BuildDockerImage(imageName)
     return docker.build(imageName)
 }
 
-def PushDockerImage(dockerImage, clientId, clientSecret, dockerRepoServerName)
+def PushDockerImage(dockerImage, dockerRepoServerName)
 {
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
         dockerImage.push()
     }
-    //ExecuteShellCommand("docker login -u ${clientId} -p ${clientSecret} ${dockerRepoServerName}", true)
-
 }
 
 
