@@ -18,14 +18,7 @@ node {
         AzClientSecret = AZURE_CLIENT_SECRET
         AzTenantId = AZURE_TENANT_ID
         AzSubId = AZURE_SUBSCRIPTION_ID
-        
-        
-        
-        /*echo "Azure CLient ID={$AZURE_CLIENT_ID}"
-        echo "Azure CLient Secret={$AZURE_CLIENT_SECRET}"
-        echo "Azure Tenant ID={$AZURE_TENANT_ID}"
-        echo "Azure Subscription ID={$AZURE_SUBSCRIPTION_ID}"
-        */
+
         stage('Prepare Environment') {
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
             sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
@@ -39,20 +32,23 @@ node {
             //def container = docker.build("${arcSettings.loginServer}/my-app:${env.BUILD_ID}")
         }
         
-        stage('Pre-build Cleanup') {
-            CleanWorkspace()
-        }
-    
-        stage('Get-Git-Repo') {
-            git url: 'https://github.com/arv-devops-test/jws31-tomcat8-jdk7.git'
-        }
         
-        stage('Build and Push Docker Image') {
-            def container = BuildDockerImage(dockerImageName)
-            PushDockerImage(container, dockerRepoServerName)
-        }
     }
     
+
+    stage('Pre-build Cleanup') {
+        CleanWorkspace()
+    }
+
+    stage('Get-Git-Repo') {
+        git url: 'https://github.com/arv-devops-test/jws31-tomcat8-jdk7.git'
+    }
+    
+    stage('Build and Push Docker Image') {
+        def container = BuildDockerImage(dockerImageName)
+        PushDockerImage(container, dockerRepoServerName)
+    }
+
     stage('Post-build Cleanup') {
         
         ExecuteShellCommand("docker image prune -f", false)
