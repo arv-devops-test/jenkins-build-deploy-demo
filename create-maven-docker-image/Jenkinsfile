@@ -34,6 +34,7 @@ node {
     stage('Build and Push Docker Image') {
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
+        echo dockerImageNameLatest
         ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
         PushDockerImage(container, dockerRepoServerName)
     }
