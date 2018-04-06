@@ -19,6 +19,9 @@ node {
             dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
             dockerImageName = dockerRepoServerName + "/" + projectName + ":${env.BUILD_ID}"
             dockerImageNameLatest = dockerRepoServerName + "/" + projectName + ":latest"
+            echo "dockerImageName=${dockerImageName}"
+            echo "dockerImageNameLatest=${dockerImageNameLatest}"
+        
         }
     }
     
@@ -34,8 +37,9 @@ node {
     stage('Build and Push Docker Image') {
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
-        echo "dockerImageNameLatest=${dockerImageNameLatest}"
         echo "dockerImageName=${dockerImageName}"
+        echo "dockerImageNameLatest=${dockerImageNameLatest}"
+
         ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
         PushDockerImage(container, dockerRepoServerName)
     }
