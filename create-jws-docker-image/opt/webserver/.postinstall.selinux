@@ -1,8 +1,0 @@
-#!/bin/sh
-#
-umask 077
-
-currentDir=`pwd`
-
-# Fix selinux file context locations
-sed -i -e "s:@@CWD@@:$currentDir:" selinux/tomcat*.fc
