@@ -1,0 +1,353 @@
+
+## <summary>policy for jws3 tomcat8</summary>
+
+######################################
+## <summary>
+##      Creates types and rules for a basic
+##      tomcat daemon domain.
+## </summary>
+## <param name="prefix">
+##      <summary>
+##      Prefix for the domain.
+##      </summary>
+## </param>
+#
+template(`tomcat8_domain_template',`
+        gen_require(`
+                attribute tomcat8_domain;
+        ')
+
+	type $1_t, tomcat8_domain;
+        type $1_exec_t;
+        init_daemon_domain($1_t, $1_exec_t)
+
+	can_exec($1_t, $1_exec_t)
+
+')
+
+########################################
+## <summary>
+##	Transition to tomcat8.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`tomcat8_domtrans',`
+	gen_require(`
+		type tomcat8_t, tomcat8_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, tomcat8_exec_t, tomcat8_t)
+')
+
+########################################
+## <summary>
+##	Search tomcat8 cache directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_search_cache',`
+	gen_require(`
+		type tomcat8_cache_t;
+	')
+
+	allow $1 tomcat8_cache_t:dir search_dir_perms;
+	files_search_var($1)
+')
+
+########################################
+## <summary>
+##	Read tomcat8 cache files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_read_cache_files',`
+	gen_require(`
+		type tomcat8_cache_t;
+	')
+
+	files_search_var($1)
+	read_files_pattern($1, tomcat8_cache_t, tomcat8_cache_t)
+')
+
+########################################
+## <summary>
+##	Create, read, write, and delete
+##	tomcat8 cache files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_manage_cache_files',`
+	gen_require(`
+		type tomcat8_cache_t;
+	')
+
+	files_search_var($1)
+	manage_files_pattern($1, tomcat8_cache_t, tomcat8_cache_t)
+')
+
+########################################
+## <summary>
+##	Manage tomcat8 cache dirs.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_manage_cache_dirs',`
+	gen_require(`
+		type tomcat8_cache_t;
+	')
+
+	files_search_var($1)
+	manage_dirs_pattern($1, tomcat8_cache_t, tomcat8_cache_t)
+')
+
+########################################
+## <summary>
+##	Read tomcat8's log files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`tomcat8_read_log',`
+	gen_require(`
+		type tomcat8_log_t;
+	')
+
+	logging_search_logs($1)
+	read_files_pattern($1, tomcat8_log_t, tomcat8_log_t)
+')
+
+########################################
+## <summary>
+##	Append to tomcat8 log files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_append_log',`
+	gen_require(`
+		type tomcat8_log_t;
+	')
+
+	logging_search_logs($1)
+	append_files_pattern($1, tomcat8_log_t, tomcat8_log_t)
+')
+
+########################################
+## <summary>
+##	Manage tomcat8 log files
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_manage_log',`
+	gen_require(`
+		type tomcat8_log_t;
+	')
+
+	logging_search_logs($1)
+	manage_dirs_pattern($1, tomcat8_log_t, tomcat8_log_t)
+	manage_files_pattern($1, tomcat8_log_t, tomcat8_log_t)
+	manage_lnk_files_pattern($1, tomcat8_log_t, tomcat8_log_t)
+')
+
+########################################
+## <summary>
+##	Search tomcat8 lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_search_lib',`
+	gen_require(`
+		type tomcat8_var_lib_t;
+	')
+
+	allow $1 tomcat8_var_lib_t:dir search_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Read tomcat8 lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_read_lib_files',`
+	gen_require(`
+		type tomcat8_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	read_files_pattern($1, tomcat8_var_lib_t, tomcat8_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage tomcat8 lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_manage_lib_files',`
+	gen_require(`
+		type tomcat8_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_files_pattern($1, tomcat8_var_lib_t, tomcat8_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage tomcat8 lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_manage_lib_dirs',`
+	gen_require(`
+		type tomcat8_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_dirs_pattern($1, tomcat8_var_lib_t, tomcat8_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Read tomcat8 PID files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_read_pid_files',`
+	gen_require(`
+		type tomcat8_var_run_t;
+	')
+
+	files_search_pids($1)
+	allow $1 tomcat8_var_run_t:file read_file_perms;
+')
+
+########################################
+## <summary>
+##	Execute tomcat8 server in the tomcat domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+#
+interface(`tomcat8_systemctl',`
+	gen_require(`
+		type tomcat8_t;
+		type tomcat8_unit_file_t;
+	')
+
+	systemd_exec_systemctl($1)
+        systemd_read_fifo_file_password_run($1)
+	allow $1 tomcat8_unit_file_t:file read_file_perms;
+	allow $1 tomcat8_unit_file_t:service manage_service_perms;
+
+	ps_process_pattern($1, tomcat8_t)
+')
+
+
+########################################
+## <summary>
+##	All of the rules required to administrate
+##	a tomcat8 environment
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`tomcat8_admin',`
+	gen_require(`
+		type tomcat8_t;
+		type tomcat8_cache_t;
+		type tomcat8_log_t;
+		type tomcat8_var_lib_t;
+		type tomcat8_var_run_t;
+	type tomcat8_unit_file_t;
+	')
+
+	allow $1 tomcat8_t:process { ptrace signal_perms };
+	ps_process_pattern($1, tomcat8_t)
+
+	files_search_var($1)
+	admin_pattern($1, tomcat8_cache_t)
+
+	logging_search_logs($1)
+	admin_pattern($1, tomcat8_log_t)
+
+	files_search_var_lib($1)
+	admin_pattern($1, tomcat8_var_lib_t)
+
+	files_search_pids($1)
+	admin_pattern($1, tomcat8_var_run_t)
+
+	tomcat8_systemctl($1)
+	admin_pattern($1, tomcat8_unit_file_t)
+	allow $1 tomcat8_unit_file_t:service all_service_perms;
+	optional_policy(`
+		systemd_passwd_agent_exec($1)
+		systemd_read_fifo_file_passwd_run($1)
+	')
+')

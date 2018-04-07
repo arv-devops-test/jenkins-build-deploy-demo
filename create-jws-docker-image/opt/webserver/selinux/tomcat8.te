@@ -1,0 +1,125 @@
+policy_module(tomcat8, 1.0.0)
+
+########################################
+#
+# Declarations
+#
+
+attribute tomcat8_domain;
+
+tomcat8_domain_template(tomcat8)
+
+type tomcat8_cache_t;
+files_type(tomcat8_cache_t)
+
+type tomcat8_log_t;
+logging_log_file(tomcat8_log_t)
+
+type tomcat8_var_lib_t;
+files_type(tomcat8_var_lib_t)
+
+type tomcat8_var_run_t;
+files_pid_file(tomcat8_var_run_t)
+
+type tomcat8_tmp_t;
+files_tmp_file(tomcat8_tmp_t)
+
+#######################################
+#
+# tomcat8 local policy
+#
+
+optional_policy(`
+	unconfined_domain(tomcat8_t)
+')
+
+########################################
+#
+# tomcat domain local policy
+#
+
+allow tomcat8_t self:process execmem;
+allow tomcat8_t self:process { signal signull };
+
+allow tomcat8_t self:tcp_socket { accept listen };
+allow tomcat8_domain self:fifo_file rw_fifo_file_perms;
+allow tomcat8_domain self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(tomcat8_domain, tomcat8_cache_t, tomcat8_cache_t)
+manage_files_pattern(tomcat8_domain, tomcat8_cache_t, tomcat8_cache_t)
+manage_lnk_files_pattern(tomcat8_domain, tomcat8_cache_t, tomcat8_cache_t)
+files_var_filetrans(tomcat8_domain, tomcat8_cache_t, { dir file })
+
+manage_dirs_pattern(tomcat8_domain, tomcat8_log_t, tomcat8_log_t)
+manage_files_pattern(tomcat8_domain, tomcat8_log_t, tomcat8_log_t)
+logging_log_filetrans(tomcat8_domain, tomcat8_log_t, { dir file })
+
+manage_dirs_pattern(tomcat8_domain, tomcat8_var_lib_t, tomcat8_var_lib_t)
+manage_files_pattern(tomcat8_domain, tomcat8_var_lib_t, tomcat8_var_lib_t)
+files_var_lib_filetrans(tomcat8_domain, tomcat8_var_lib_t, { dir file })
+
+manage_dirs_pattern(tomcat8_domain, tomcat8_var_run_t, tomcat8_var_run_t)
+manage_files_pattern(tomcat8_domain, tomcat8_var_run_t, tomcat8_var_run_t)
+files_pid_filetrans(tomcat8_domain, tomcat8_var_run_t, { dir file })
+
+manage_dirs_pattern(tomcat8_t, tomcat8_tmp_t, tomcat8_tmp_t)
+manage_files_pattern(tomcat8_t, tomcat8_tmp_t, tomcat8_tmp_t)
+manage_fifo_files_pattern(tomcat8_t, tomcat8_tmp_t, tomcat8_tmp_t)
+files_tmp_filetrans(tomcat8_t, tomcat8_tmp_t, { file fifo_file dir })
+
+# we want to stay in a new tomcat domain if we call tomcat binary from a script
+# initrc_t@tomcat8_test_exec_t->tomcat8_test_t@tomcat8_exec_t->tomcat8_test_t
+can_exec(tomcat8_domain, tomcat8_exec_t)
+
+kernel_read_system_state(tomcat8_t)
+kernel_read_network_state(tomcat8_domain)
+
+corecmd_exec_bin(tomcat8_domain)
+corecmd_exec_shell(tomcat8_domain)
+
+corenet_tcp_bind_generic_node(tomcat8_domain)
+corenet_udp_bind_generic_node(tomcat8_domain)
+corenet_tcp_bind_http_port(tomcat8_domain)
+corenet_tcp_bind_http_cache_port(tomcat8_domain)
+#dknox - undefined
+#corenet_tcp_bind_mxi_port(tomcat8_domain)
+corenet_tcp_connect_http_port(tomcat8_domain)
+#dknox - undefined
+#corenet_tcp_connect_mxi_port(tomcat8_domain)
+
+dev_read_rand(tomcat8_domain)
+dev_read_urand(tomcat8_domain)
+dev_read_sysfs(tomcat8_domain)
+
+domain_use_interactive_fds(tomcat8_domain)
+
+fs_getattr_all_fs(tomcat8_domain)
+
+#dknox
+#fs_read_hugetlbfs_files(tomcat8_domain)
+
+files_read_etc_files(tomcat8_domain)
+files_read_usr_files(tomcat8_domain)
+
+#dknox
+#auth_read_passwd(tomcat8_domain)
+
+miscfiles_read_localization(tomcat8_domain)
+
+sysnet_dns_name_resolve(tomcat8_domain)
+
+# This example allows transitions from unconfined_t to tomcat8_t.
+# To add other user domains/types, add the type/role to the require
+# block below, and add a new domain_auto_trans and role line for
+# each.
+
+# Require the role and type that you'll be transitioning from
+require {
+    type unconfined_t;
+    role unconfined_r;
+}
+# Transition unconfined_t to tomcat8_t
+domain_auto_trans(unconfined_t, tomcat8_exec_t, tomcat8_t);
+# Add the tomcat8_t type to the role so that it isn't
+# invalid after transitions
+role unconfined_r types tomcat8_t;

@@ -1,0 +1,6 @@
+@@CWD@@/bin(/.*\.sh)?			gen_context(system_u:object_r:tomcat8_exec_t,s0)
+@@CWD@@/bin/jsvc	       	--	gen_context(system_u:object_r:tomcat8_exec_t,s0)
+@@CWD@@/temp(/.*)?        		gen_context(system_u:object_r:tomcat8_cache_t,s0)
+@@CWD@@/work(/.*)?        		gen_context(system_u:object_r:tomcat8_cache_t,s0)
+@@CWD@@/webapps(/.*)?	        gen_context(system_u:object_r:tomcat8_var_lib_t,s0)
+@@CWD@@/logs(/.*)?		        gen_context(system_u:object_r:tomcat8_log_t,s0)
