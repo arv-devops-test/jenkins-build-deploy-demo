@@ -21,15 +21,10 @@ node {
 
     stage('create-build-container')  {
         //run maven container and execture the below steps
-        agent {
-                docker { image 'maven:latest' }
-            }
-            steps {
-                sh 'mvn -v'
-                //git url: 'https://github.com/arv-devops-test/hello-world-war.git'
-            }
-        // get git repo for java app
-        
+        docker.image('maven:latest').withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
+            /* Wait until mysql service is up */
+            sh 'mvn -v'
+        }
         // compile app using maven
         // publish war file to artifactory
 
