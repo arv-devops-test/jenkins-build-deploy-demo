@@ -6,12 +6,12 @@ node {
     ExecuteShellCommand("whoami", false)
 
     def dockerImageName = 'java-hello-world'
-    def dockerImageNameLatest '${dockerImageName:latest}'
+    def dockerImageNameLatest = '${dockerImageName:latest}'
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
     def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
     def gitRepoUrl = 'https://github.com/arv-devops-test/app-docker-image.git'
     def ArtifactoryWarPath = 'java-hello-world/v1/'
-    
+
     stage('Pre-build Cleanup') {
         CleanWorkspace()
     }
