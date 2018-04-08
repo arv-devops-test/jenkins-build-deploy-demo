@@ -10,8 +10,7 @@ node {
     def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
     def gitRepoUrl = 'https://github.com/arv-devops-test/app-docker-image.git'
     def ArtifactoryWarPath = 'java-hello-world/v1/'
-    dockerImageName = dockerRepoServerName + "/" + projectName + ":${env.BUILD_ID}"
-    dockerImageNameLatest = dockerRepoServerName + "/" + projectName + ":latest"
+    dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
 
     stage('Pre-build Cleanup') {
         CleanWorkspace()
@@ -46,8 +45,8 @@ node {
 
         DockerLogin(dockerRepoServerName)
         container.push()
-        ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
-        ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
+        //ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
+        //ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
     }
 
     stage('Post-build Cleanup') {
