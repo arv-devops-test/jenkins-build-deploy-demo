@@ -19,6 +19,25 @@ node {
         git url: gitRepoUrl
     }
     
+    stage('Get-Artifacts') {
+        //Create a new artifactory server connection instance
+        def server = Artifactory.server 'artifactory-main'
+  
+        // Define what to download from artifactory
+        def downloadSpec = """{
+        "files": [
+            {
+                "pattern": "${ArtifactoryWarPath}",
+                "flat": "true",
+                "target": "ocp/deployments/"
+            }
+        ]
+        }"""
+
+        //Download files defined in downloadspec
+        server.download(downloadSpec)
+    }
+    
     stage('Build and Push Docker Image') {
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
