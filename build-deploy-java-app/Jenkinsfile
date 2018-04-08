@@ -1,0 +1,90 @@
+import groovy.json.JsonSlurper
+
+node {
+    
+    echo "Workspace=${WORKSPACE}"
+    echo "User="
+    ExecuteShellCommand("whoami", false)
+    def dockerRepoServerName
+    def dockerImageName
+    def dockerImageNameLatest
+    def projectName ="java-helloworld"
+
+
+    stage('Pre-build Cleanup') {
+        CleanWorkspace()
+    }
+
+    // stage('Get-Git-Repo') {
+    //     git url: 'https://github.com/arv-devops-test/hello-world-war.git'
+    // }
+
+    stage('create-build-container')  {
+        //run maven container and execture the below steps
+        agent {
+                docker { image 'maven:latest' }
+            }
+            steps {
+                sh 'mvn -v'
+                //git url: 'https://github.com/arv-devops-test/hello-world-war.git'
+            }
+        // get git repo for java app
+        
+        // compile app using maven
+        // publish war file to artifactory
+
+    }
+
+    stage('Post-build Cleanup') {
+        
+        CleanWorkspace()
+    }
+    
+
+}
+
+
+
+def CleanWorkspace()
+{
+    ws_content = sh (
+                    script: "ls",
+                    returnStdout: true
+                    ).trim()
+        echo ws_content
+        
+        if(ws_content != "")
+        {
+            echo "Workspace has content:"
+            echo "Cleaning workspace..."
+            sh 'rm -r $WORKSPACE/* 2>/dev/null';
+        }
+}
+
+def ExecuteShellCommand(cmd, failOnError) {
+   def errorHandling = ""
+   if(!failOnError)
+   {
+       errorHandling = "Ignoring Exit Code as specified"
+   }
+   try
+   {
+        exitCode = sh (script: cmd,
+                      returnStatus: true)
+        
+        echo "Finished task with Exit Code: ${exitCode.toString()}  :: ${errorHandling}"
+        if(exitCode != 0 && failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+   catch(ex)
+   {
+        if(failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+}
