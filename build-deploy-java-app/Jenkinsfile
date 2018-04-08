@@ -5,7 +5,7 @@ node {
     echo "Workspace=${WORKSPACE}"
     echo "User="
     ExecuteShellCommand("whoami", false)
-    def dockerRepoServerName
+    def dockerRepoServerName = "arvindockerregistry.azurecr.io"
     def dockerImageName
     def dockerImageNameLatest
     def projectName ="java-helloworld"
@@ -21,10 +21,15 @@ node {
 
     stage('create-build-container')  {
         //run maven container and execture the below steps
-        docker.image('maven:latest').withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
+        withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+
+            ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
+            docker.image('${dockerRepoServerName}/maven:latest').withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
             /* Wait until mysql service is up */
             sh 'mvn -v'
         }
+        }
+        
         // compile app using maven
         // publish war file to artifactory
 
