@@ -6,7 +6,7 @@ node {
     echo "User="
     ExecuteShellCommand("whoami", false)
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
-    def mavenImageName = "${dockerRepoServerName}/maven:latest"
+    def mavenImageName = "${dockerRepoServerName}/maven:3.5.3-jdk-7"
     def dockerImageName
     def dockerImageNameLatest
     def projectName ="java-helloworld"
