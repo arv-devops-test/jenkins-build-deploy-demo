@@ -7,7 +7,9 @@ node {
     def dockerRepoServerName
     def dockerImageName
     def dockerImageNameLatest
-    def projectName ="jws31t8"
+    def dockerRegName = "arvindockerregistry.azurecr.io"
+    def baseImageName ="${dockerRegName}/jws31t8:latest"
+ 
 
     stage('Pre-build Cleanup') {
         CleanWorkspace()
