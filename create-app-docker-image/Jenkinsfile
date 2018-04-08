@@ -6,7 +6,6 @@ node {
     ExecuteShellCommand("whoami", false)
 
     def dockerImageName = 'java-hello-world'
-    def dockerImageNameLatest = '${dockerImageName:latest}'
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
     def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
     def gitRepoUrl = 'https://github.com/arv-devops-test/app-docker-image.git'
@@ -42,7 +41,7 @@ node {
     stage('Build and Push Docker Image') {
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
-        dockerImageNameLatest = "${dockerImageName}:latest"
+        dockerImageNameLatest = "${dockerRepoServerName}/${dockerImageName}:latest"
         DockerLogin(dockerRepoServerName)
         container.push()
         ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
