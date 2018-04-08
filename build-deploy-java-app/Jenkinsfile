@@ -7,6 +7,8 @@ node {
     ExecuteShellCommand("whoami", false)
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
     def mavenImageName = "${dockerRepoServerName}/maven:3.5.3-jdk-7"
+    def buildOutputPath = "${WORKSPACE}/target"
+    def artifactoryPublishPath = "java-hello-world/v1/"
     def dockerImageName
     def dockerImageNameLatest
     def projectName ="java-helloworld"
@@ -29,7 +31,17 @@ node {
                
                 git url: 'https://github.com/arv-devops-test/hello-world-war.git'
                 sh 'mvn package'
-                sh 'tree'
+                
+                def Artifactory.server 'arvartifactory'
+                def uploadSpec = """{
+                  "files": [
+                    {
+                      "pattern": "${buildOutputPath}/*.war",
+                      "target": "${artifactoryPublishPath}"
+                    }
+                 ]
+                }"""
+                server.upload(uploadSpec)
             }
             //docker.image(mavenImageName).withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
             //}
