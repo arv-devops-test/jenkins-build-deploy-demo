@@ -28,7 +28,8 @@ node {
             docker.image(mavenImageName).inside {
                
                 git url: 'https://github.com/arv-devops-test/hello-world-war.git'
-                sh 'ls -al'
+                sh 'mvn package'
+                sh 'tree'
             }
             //docker.image(mavenImageName).withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
             //}
