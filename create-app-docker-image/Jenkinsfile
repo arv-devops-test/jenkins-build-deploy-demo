@@ -4,19 +4,19 @@ node {
     echo "Workspace=${WORKSPACE}"
     echo "User="
     ExecuteShellCommand("whoami", false)
-    def dockerRepoServerName
-    def dockerImageName
-    def dockerImageNameLatest
-    def dockerRegName = "arvindockerregistry.azurecr.io"
-    def baseImageName ="${dockerRegName}/jws31t8:latest"
- 
+
+    def dockerImageName = 'java-hello-world'
+    def dockerImageNameLatest '${dockerImageName:latest}'
+    def dockerRepoServerName = "arvindockerregistry.azurecr.io"
+    def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
+    def gitRepoUrl = 'https://github.com/arv-devops-test/app-docker-image.git'
 
     stage('Pre-build Cleanup') {
         CleanWorkspace()
     }
 
     stage('Get-Git-Repo') {
-        git url: 'https://github.com/arv-devops-test/jws31-tomcat8-jdk7.git'
+        git url: gitRepoUrl
     }
     
     stage('Build and Push Docker Image') {
@@ -33,8 +33,6 @@ node {
         ExecuteShellCommand("docker image prune -f", false)
         CleanWorkspace()
     }
-    
-
 }
 
 def BuildDockerImage(imageName)
