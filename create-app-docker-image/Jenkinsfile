@@ -48,7 +48,6 @@ node {
         container.push()
         ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
         ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
-        PushDockerImage(container, dockerRepoServerName)
     }
 
     stage('Post-build Cleanup') {
