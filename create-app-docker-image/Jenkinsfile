@@ -40,6 +40,7 @@ node {
     }
     
     stage('Build and Push Docker Image') {
+        echo "dockerRepoServerName=${dockerRepoServerName}"
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
         dockerImageNameLatest = "${dockerImageName}:latest"
@@ -64,6 +65,7 @@ def BuildDockerImage(imageName)
 
 def DockerLogin()
 {
+    echo "dockerRepoServerName=${dockerRepoServerName}"
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
