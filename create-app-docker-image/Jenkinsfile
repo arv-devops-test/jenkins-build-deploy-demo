@@ -10,7 +10,8 @@ node {
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
     def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
     def gitRepoUrl = 'https://github.com/arv-devops-test/app-docker-image.git'
-
+    def ArtifactoryWarPath = 'java-hello-world/v1/'
+    
     stage('Pre-build Cleanup') {
         CleanWorkspace()
     }
@@ -21,17 +22,17 @@ node {
     
     stage('Get-Artifacts') {
         //Create a new artifactory server connection instance
-        def server = Artifactory.server 'artifactory-main'
+        def server = Artifactory.server 'arvartifactory'
   
         // Define what to download from artifactory
         def downloadSpec = """{
         "files": [
-            {
-                "pattern": "${ArtifactoryWarPath}",
-                "flat": "true",
-                "target": "ocp/deployments/"
-            }
-        ]
+                {
+                    "pattern": "${ArtifactoryWarPath}",
+                    "flat": "true",
+                    "target": "deploy/"
+                }
+            ]
         }"""
 
         //Download files defined in downloadspec
