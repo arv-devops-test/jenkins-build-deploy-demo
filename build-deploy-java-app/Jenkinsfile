@@ -26,8 +26,9 @@ node {
 
             ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
             docker.image(mavenImageName).inside {
-                //sh 'whoami'
-                sh 'mvn -v'
+               
+                git url: 'https://github.com/arv-devops-test/hello-world-war.git'
+                sh 'ls -al'
             }
             //docker.image(mavenImageName).withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
             //}
