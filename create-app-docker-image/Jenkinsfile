@@ -1,0 +1,95 @@
+import groovy.json.JsonSlurper
+
+node {
+    echo "Workspace=${WORKSPACE}"
+    echo "User="
+    ExecuteShellCommand("whoami", false)
+    def dockerRepoServerName
+    def dockerImageName
+    def dockerImageNameLatest
+    def projectName ="jws31t8"
+
+    stage('Pre-build Cleanup') {
+        CleanWorkspace()
+    }
+
+    stage('Get-Git-Repo') {
+        git url: 'https://github.com/arv-devops-test/jws31-tomcat8-jdk7.git'
+    }
+    
+    stage('Build and Push Docker Image') {
+        def container = BuildDockerImage(dockerImageName)
+        // tag as latest
+
+        ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
+        ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
+        PushDockerImage(container, dockerRepoServerName)
+    }
+
+    stage('Post-build Cleanup') {
+        
+        ExecuteShellCommand("docker image prune -f", false)
+        CleanWorkspace()
+    }
+    
+
+}
+
+def BuildDockerImage(imageName)
+{
+    return docker.build(imageName)
+}
+
+def PushDockerImage(dockerImage, dockerRepoServerName)
+{
+    withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+
+        ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
+        dockerImage.push()
+    }
+}
+
+
+def CleanWorkspace()
+{
+    ws_content = sh (
+                    script: "ls",
+                    returnStdout: true
+                    ).trim()
+        echo ws_content
+        
+        if(ws_content != "")
+        {
+            echo "Workspace has content:"
+            echo "Cleaning workspace..."
+            sh 'rm -r $WORKSPACE/* 2>/dev/null';
+        }
+}
+
+def ExecuteShellCommand(cmd, failOnError) {
+   def errorHandling = ""
+   if(!failOnError)
+   {
+       errorHandling = "Ignoring Exit Code as specified"
+   }
+   try
+   {
+        exitCode = sh (script: cmd,
+                      returnStatus: true)
+        
+        echo "Finished task with Exit Code: ${exitCode.toString()}  :: ${errorHandling}"
+        if(exitCode != 0 && failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+   catch(ex)
+   {
+        if(failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+}
