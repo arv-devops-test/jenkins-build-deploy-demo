@@ -6,6 +6,7 @@ node {
     echo "User="
     ExecuteShellCommand("whoami", false)
     def dockerRepoServerName = "arvindockerregistry.azurecr.io"
+    def mavenImageName = "${dockerRepoServerName}/maven:latest"
     def dockerImageName
     def dockerImageNameLatest
     def projectName ="java-helloworld"
@@ -24,7 +25,7 @@ node {
         withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
             ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
-            docker.image('${dockerRepoServerName}/maven:latest').withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
+            docker.image(mavenImageName).withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
             /* Wait until mysql service is up */
             sh 'mvn -v'
         }
