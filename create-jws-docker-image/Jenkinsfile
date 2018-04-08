@@ -17,8 +17,7 @@ node {
             sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
             settings = sh(script: "az acr show --resource-group arvin-docker-registry-resource --name arvindockerregistry", returnStdout: true)
             dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
-            dockerImageName = dockerRepoServerName + "/" + projectName + ":${env.BUILD_ID}"
-            dockerImageNameLatest = dockerRepoServerName + "/" + projectName + ":latest"
+            dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
         }
     }
     
@@ -33,10 +32,6 @@ node {
     
     stage('Build and Push Docker Image') {
         def container = BuildDockerImage(dockerImageName)
-        // tag as latest
-
-        ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
-        ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
         PushDockerImage(container, dockerRepoServerName)
     }
 
