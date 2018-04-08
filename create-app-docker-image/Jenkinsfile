@@ -43,6 +43,7 @@ node {
         def container = BuildDockerImage(dockerImageName)
         // tag as latest
         dockerImageNameLatest = "${dockerImageName}:latest"
+        container.push();
         ExecuteShellCommand("docker tag ${dockerImageName} ${dockerImageNameLatest}", true)
         ExecuteShellCommand("docker push ${dockerImageNameLatest}", true)
         PushDockerImage(container, dockerRepoServerName)
@@ -60,12 +61,11 @@ def BuildDockerImage(imageName)
     return docker.build(imageName)
 }
 
-def PushDockerImage(dockerImage, dockerRepoServerName)
+def DockerLogin()
 {
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
-        dockerImage.push()
     }
 }
 
