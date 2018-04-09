@@ -19,7 +19,7 @@ node {
     }
     
     stage('Deploy-To-AKS') {
-        withCredentials([azureServicePrincipal('63d6d38b-38c7-4a70-8ca9-cd82e40da5d7')]) {
+        withCredentials([azureServicePrincipal('aks-user')]) {
         
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
             //sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
@@ -27,7 +27,7 @@ node {
             //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
             //dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
         }
-        DockerLogin(dockerRepoServerName)
+        //DockerLogin(dockerRepoServerName)
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
 
@@ -39,7 +39,7 @@ node {
 
 def DockerLogin(dockerRepoServerName)
 {
-    
+
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
