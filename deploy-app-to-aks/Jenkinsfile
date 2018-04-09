@@ -24,6 +24,7 @@ node {
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
             sh 'az acr login --name arvindockerregistry'
             sh 'az aks get-credentials -g az-resource-east -n arv-aks-cluster'
+            DockerLogin(dockerRepoServerName)
             //sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
             //settings = sh(script: "az acr show --resource-group arvin-docker-registry-resource --name arvindockerregistry", returnStdout: true)
             //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
@@ -51,7 +52,6 @@ node {
 
 def DockerLogin(dockerRepoServerName)
 {
-
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
