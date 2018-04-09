@@ -27,10 +27,9 @@ node {
             //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
             //dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
         }
-    
+        DockerLogin(dockerRepoServerName)
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
-
 
     stage('Post-build Cleanup') {
         
@@ -40,6 +39,7 @@ node {
 
 def DockerLogin(dockerRepoServerName)
 {
+    
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
