@@ -36,7 +36,7 @@ node {
         ExecuteShellCommand('kubectl delete po/java-hello-world', false)
     }
     
-    stage('Deploy-To-AKS) {
+    stage('Deploy-To-AKS') {
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
 
