@@ -18,7 +18,7 @@ node {
         git url: gitRepoUrl
     }
     
-    stage('Deploy-To-AKS') {
+    stage('Login-To-AKS') {
         withCredentials([azureServicePrincipal('aks-user')]) {
         
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
@@ -29,7 +29,13 @@ node {
             //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
             //dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
         }
-        //DockerLogin(dockerRepoServerName)
+    }
+    
+    stage('Clean-AKS') {
+        
+    }
+    
+    stage('Deploy-To-AKS) {
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
 
