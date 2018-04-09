@@ -29,7 +29,6 @@ node {
     }
 }
 
-
 def DockerLogin(dockerRepoServerName)
 {
     withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
@@ -37,7 +36,6 @@ def DockerLogin(dockerRepoServerName)
         ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
     }
 }
-
 
 def CleanWorkspace()
 {
@@ -80,5 +78,4 @@ def ExecuteShellCommand(cmd, failOnError) {
             error("An error occured while executing this: ${cmd}")
         }
    }
-   
 }
