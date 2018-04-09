@@ -34,7 +34,7 @@ node {
     
     stage('Clean-AKS') {
         
-        ExecuteShellCommand('kubectl delete deploy/java-hello-world-v1', false)
+        ExecuteShellCommand('kubectl delete deploy/java-hello-world', false)
         //ExecuteShellCommand('kubectl delete po/java-hello-world', false)
         ExecuteShellCommand('kubectl delete service java-hello-world', false)
         
