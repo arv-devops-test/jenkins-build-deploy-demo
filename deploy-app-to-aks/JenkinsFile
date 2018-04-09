@@ -1,0 +1,84 @@
+import groovy.json.JsonSlurper
+
+node {
+    echo "Workspace=${WORKSPACE}"
+    echo "User="
+    ExecuteShellCommand("whoami", false)
+
+    def projectName ="java-hello-world"
+    def dockerRepoServerName = "arvindockerregistry.azurecr.io"
+    def baseImageName ="${dockerRepoServerName}/jws31t8:latest"
+    def gitRepoUrl = 'https://github.com/arv-devops-test/app-kub-deploy.git'
+
+    stage('Pre-build Cleanup') {
+        CleanWorkspace()
+    }
+
+    stage('Get-Git-Repo') {
+        git url: gitRepoUrl
+    }
+    
+    stage('Deploy-To-AKS') {
+        ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
+    }
+
+
+    stage('Post-build Cleanup') {
+        
+        CleanWorkspace()
+    }
+}
+
+
+def DockerLogin(dockerRepoServerName)
+{
+    withCredentials([usernamePassword(credentialsId: 'DockerPrivateRegistryId', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+
+        ExecuteShellCommand("docker login -u ${USERNAME} -p ${PASSWORD} ${dockerRepoServerName}", true)
+    }
+}
+
+
+def CleanWorkspace()
+{
+    ws_content = sh (
+                    script: "ls",
+                    returnStdout: true
+                    ).trim()
+        echo ws_content
+        
+        if(ws_content != "")
+        {
+            echo "Workspace has content:"
+            echo "Cleaning workspace..."
+            sh 'rm -r $WORKSPACE/* 2>/dev/null';
+        }
+}
+
+def ExecuteShellCommand(cmd, failOnError) {
+   def errorHandling = ""
+   if(!failOnError)
+   {
+       errorHandling = "Ignoring Exit Code as specified"
+   }
+   try
+   {
+        exitCode = sh (script: cmd,
+                      returnStatus: true)
+        
+        echo "Finished task with Exit Code: ${exitCode.toString()}  :: ${errorHandling}"
+        if(exitCode != 0 && failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+   catch(ex)
+   {
+        if(failOnError)
+        {
+            error("An error occured while executing this: ${cmd}")
+        }
+   }
+   
+}
