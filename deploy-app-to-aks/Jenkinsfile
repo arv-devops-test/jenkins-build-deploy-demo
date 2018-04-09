@@ -27,7 +27,7 @@ node {
             //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
             //dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
         }
-        //DockerLogin(dockerRepoServerName)
+        DockerLogin(dockerRepoServerName)
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
 
