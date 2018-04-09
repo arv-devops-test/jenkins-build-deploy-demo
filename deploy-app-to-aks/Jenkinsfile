@@ -19,6 +19,15 @@ node {
     }
     
     stage('Deploy-To-AKS') {
+        withCredentials([azureServicePrincipal('63d6d38b-38c7-4a70-8ca9-cd82e40da5d7')]) {
+        
+            sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+            //sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
+            //settings = sh(script: "az acr show --resource-group arvin-docker-registry-resource --name arvindockerregistry", returnStdout: true)
+            //dockerRepoServerName = new JsonSlurper().parseText(settings).loginServer
+            //dockerImageName = dockerRepoServerName + "/" + projectName + ":latest"
+        }
+    
         ExecuteShellCommand("kubectl create -f app-kub-manifest.yaml", true)
     }
 
